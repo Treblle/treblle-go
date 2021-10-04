@@ -1,0 +1,92 @@
+{
+  "api_key": "",
+  "project_id": "",
+  "version": 0.6,
+  "sdk": "laravel",
+  "data": {
+    "server": {
+      "ip": "18.194.223.176",
+      "timezone": "UTC",
+      "software": "Apache",
+      "signature": "Apache/2.4.2",
+      "protocol": "HTTP/1.1",
+      "os": {
+        "name": "Linux",
+        "release": "4.14.186-110.268.amzn1.x86_64",
+        "architecture": "x86_64"
+      }
+    },
+    "language": {
+      "name": "php",
+      "version": "7.3.19"
+    },
+    "request": {
+      "timestamp": "2020-11-15 23:58:25",
+      "ip": "174.196.210.87",
+      "url": "https://api-prod.mymov.com/api/v1/products",
+      "user_agent": "Mov/1 CFNetwork/1197 Darwin/20.0.0",
+      "method": "GET",
+      "headers": {
+        "X-Forwarded-For": "174.196.210.87",
+        "X-Forwarded-Proto": "https",
+        "X-Forwarded-Port": "443",
+        "Host": "api-prod.mymov.com",
+        "X-Amzn-Trace-Id": "Root=1-5fb1c0a0-3c6562251cc16fac3cb7226b",
+        "accept": "*/*",
+        "content-type": "application/json",
+        "accept-encoding": "gzip, deflate, br",
+        "user-agent": "Mov/1 CFNetwork/1197 Darwin/20.0.0",
+        "authorization": "Bearer R0g2vbUuaKSfjy6gFhS2AmLps0XhBPapvmXWTWuE5pROKAEPp8yXX2QH547r",
+        "accept-language": "en-us"
+      },
+      "body": {
+        "example_key": "example_value",
+        "mode": "test",
+        "language": "en"
+      }
+    },
+    "response": {
+      "headers": {
+        "Cache-Control": "no-cache, private",
+        "Date": "Sun, 15 Nov 2020 23:58:25 GMT",
+        "Content-Type": "application/json",
+        "X-RateLimit-Limit": "240",
+        "X-RateLimit-Remaining": "237"
+      },
+      "code": 200,
+      "size": 27885,
+      "load_time": 0.19036316871643066,
+      "body": {
+        "status": "1",
+        "message": "News list is a success.",
+        "version": "0.5",
+        "unread_user_messages": 0,
+        "news": [
+          {
+            "id": "22",
+            "title": "Grocery Discount dates announced!",
+            "content": "If an associate currently has a discount card, they are eligible for a 10% discount on grocery items (exclusions apply, please ask your manager) beginning November 21st and ending January 1, 2020.",
+            "created_on": "11-15-19 3:09PM",
+            "created_ago": "3 days ago"
+          },
+          {
+            "id": "21",
+            "title": "Final Quarter Key Event Dates: Available now!",
+            "content": "Mark your calendars with the key event dates for the remainder of the year: Nov. 27th, 28th, 29th, 30th & Dec. 21st, 22nd, 23rd, 24th, 26th, & Dec. 31st.",
+            "created_on": "11-08-19 8:13PM",
+            "created_ago": "1 week ago"
+          }
+        ]
+      },
+      "errors": [
+        {
+          "source": "onException",
+          "type": "UNHANDLED_EXCEPTION",
+          "message": "Undefined variable: user",
+          "file": "/var/www/html/app/Http/Controllers/Api/LeadController.php",
+          "line": 45
+        }
+      ]
+    }
+  }
+}
