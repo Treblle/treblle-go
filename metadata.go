@@ -2,8 +2,6 @@ package treblle
 
 import (
 	"runtime"
-
-	"github.com/matishsiao/goInfo"
 )
 
 type MetaData struct {
@@ -63,14 +61,9 @@ func getLanguageInfo() LanguageInfo {
 
 // Get information about the operating system that is running on the server
 func getOsInfo() OsInfo {
-	gi, err := goInfo.GetInfo()
-	if err != nil {
-		return OsInfo{}
-	}
-
 	return OsInfo{
-		Name:         gi.GoOS,
-		Release:      gi.Kernel,
-		Architecture: gi.Platform,
+		Name:         runtime.GOOS,
+		Release:      "",
+		Architecture: runtime.GOARCH,
 	}
 }

@@ -23,13 +23,16 @@ type ErrorInfo struct {
 	Line    int    `json:"line"`
 }
 
+// Extract information from the response recorder
 func getResponseInfo(response *httptest.ResponseRecorder, startTime time.Time) ResponseInfo {
+	defer dontPanic()
 	responseBytes := response.Body.Bytes()
 
+	errInfo := ErrorInfo{}
 	var body map[string]interface{}
 	err := json.Unmarshal(responseBytes, &body)
 	if err != nil {
-		// TOO
+		errInfo.Message = err.Error()
 	}
 
 	headers := make(map[string]string)
@@ -43,6 +46,6 @@ func getResponseInfo(response *httptest.ResponseRecorder, startTime time.Time) R
 		Size:     len(responseBytes),
 		LoadTime: float64(time.Since(startTime).Microseconds()),
 		Body:     body,
-		Errors:   nil, // TODO ?
+		Errors:   []ErrorInfo{errInfo},
 	}
 }

@@ -3,6 +3,8 @@ package treblle
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"regexp"
@@ -19,24 +21,11 @@ type RequestInfo struct {
 	Body      map[string]interface{} `json:"body"`
 }
 
+var ErrNotJson = errors.New("request body is not JSON")
+
 // Get details about the request
 func getRequestInfo(r *http.Request, startTime time.Time) (RequestInfo, error) {
-	buf, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		return RequestInfo{}, err
-	}
-	bodyReaderOriginal := ioutil.NopCloser(bytes.NewBuffer(buf))
-	bodyReaderCopy := ioutil.NopCloser(bytes.NewBuffer(buf))
-
-	body, err := ioutil.ReadAll(bodyReaderOriginal)
-	if err != nil {
-		return RequestInfo{}, err
-	}
-
-	sanitizedJsonString, err := getMaskedJSON(body)
-	if err != nil {
-		return RequestInfo{}, err
-	}
+	defer dontPanic()
 
 	headers := make(map[string]string)
 	for k, _ := range r.Header {
@@ -50,12 +39,37 @@ func getRequestInfo(r *http.Request, startTime time.Time) (RequestInfo, error) {
 		UserAgent: r.UserAgent(),
 		Method:    r.Method,
 		Headers:   headers,
-		Body:      sanitizedJsonString,
 	}
 
-	r.Body = bodyReaderCopy
+	if r.Body != nil && r.Body != http.NoBody {
+		sanitizedJsonString := make(map[string]interface{})
+		buf, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			return ri, err
+		}
+		// open 2 NopClosers over the buffer to allow buffer to be read and still passed on
+		bodyReaderOriginal := ioutil.NopCloser(bytes.NewBuffer(buf))
+		// restore the original request body once done processing
+		defer recoverBody(r, ioutil.NopCloser(bytes.NewBuffer(buf)))
 
+		body, err := ioutil.ReadAll(bodyReaderOriginal)
+		if err != nil {
+			return ri, err
+		}
+
+		// mask all the JSON fields listed in Config.KeysToMask
+		sanitizedJsonString, err = getMaskedJSON(body)
+		if err != nil {
+			return ri, err
+		}
+
+		ri.Body = sanitizedJsonString
+	}
 	return ri, nil
+}
+
+func recoverBody(r *http.Request, bodyReaderCopy io.ReadCloser) {
+	r.Body = bodyReaderCopy
 }
 
 func getMaskedJSON(body []byte) (map[string]interface{}, error) {

@@ -19,12 +19,12 @@ Configure Treblle at the start of your `main()` function:
 import "github.com/treblle/treblle-go"
 
 func main() {
-    treblle.Configure(treblle.Configuration{
-        APIKey:          "YOUR API KEY HERE",
-        ProjectID:    "YOUR PROJECT ID HERE",
-        // 
-        KeysToMask: []string{"password", "card_number"},
-    })
+	treblle.Configure(treblle.Configuration{
+		APIKey:     "YOUR API KEY HERE",
+		ProjectID:  "YOUR PROJECT ID HERE",
+		KeysToMask: []string{"password", "card_number"}, // optional, mask fields you don't want sent to Treblle
+		ServerURL:  "https://rocknrolla.treblle.com",    // optional, don't use default server URL
+	}
 
     // rest of your program.
 }
@@ -32,11 +32,8 @@ func main() {
 ```
 
 
-After that, just use the middleware with any of your handlers
+After that, just use the middleware with any of your handlers:
  ```go
-import "github.com/treblle/treblle-go"
-
-
 mux := http.NewServeMux()
 mux.Handle("/", treblle.Middleware(yourHandler))
 ```

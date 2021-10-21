@@ -1,6 +1,8 @@
 package treblle
 
 import (
+	"errors"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"time"
@@ -15,10 +17,7 @@ func Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		startTime := time.Now()
 
-		requestInfo, err := getRequestInfo(r, startTime)
-		if err != nil {
-			return // continue but don't send anything out to Treblle
-		}
+		requestInfo, errReqInfo := getRequestInfo(r, startTime)
 
 		// intercept the response so it can be copied
 		rec := httptest.NewRecorder()
@@ -27,20 +26,37 @@ func Middleware(next http.Handler) http.Handler {
 		next.ServeHTTP(rec, r)
 		// after this finishes, we have the response recorded
 
-		ti := MetaData{
-			ApiKey:    Config.APIKey,
-			ProjectID: Config.ProjectID,
-			Version:   treblleVersion,
-			Sdk:       sdkName,
-			Data: DataInfo{
-				Server:   getServerInfo(),
-				Language: getLanguageInfo(),
-				Request:  requestInfo,
-				Response: getResponseInfo(rec, startTime),
-			},
+		// copy the original headers
+		for k, v := range rec.Header() {
+			w.Header()[k] = v
 		}
-		go sendToTreblle(ti)
-
+		// copy the original code
+		w.WriteHeader(rec.Code)
+		// write the original body
 		w.Write(rec.Body.Bytes())
+
+		if !errors.Is(errReqInfo, ErrNotJson) {
+			ti := MetaData{
+				ApiKey:    Config.APIKey,
+				ProjectID: Config.ProjectID,
+				Version:   treblleVersion,
+				Sdk:       sdkName,
+				Data: DataInfo{
+					Server:   Config.serverInfo,
+					Language: Config.languageInfo,
+					Request:  requestInfo,
+					Response: getResponseInfo(rec, startTime),
+				},
+			}
+			// don't block execution while sending data to Treblle
+			go sendToTreblle(ti)
+		}
 	})
+}
+
+// If anything happens to go wrong inside one of treblle-go internals, recover from panic and continue
+func dontPanic() {
+	if err := recover(); err != nil {
+		log.Printf("treblle-go panic: %s", err)
+	}
 }
