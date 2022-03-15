@@ -111,7 +111,10 @@ func (s *TestSuite) Test_Middleware() {
 			s.Require().Equal(tc.requestHeaderValue, r.Header.Get(tc.requestHeaderKey))
 			w.Header()[tc.respHeaderKey] = []string{tc.respHeaderValue}
 			w.WriteHeader(tc.status)
-			w.Write([]byte(tc.responseJson))
+			_, err := w.Write([]byte(tc.responseJson))
+			if err != nil {
+				return
+			}
 		})
 
 		requestHeaders := map[string]string{}

@@ -36,7 +36,7 @@ func getResponseInfo(response *httptest.ResponseRecorder, startTime time.Time) R
 	}
 
 	headers := make(map[string]string)
-	for k, _ := range response.Header() {
+	for k := range response.Header() {
 		headers[k] = response.Header().Get(k)
 	}
 
