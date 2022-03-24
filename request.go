@@ -28,7 +28,7 @@ func getRequestInfo(r *http.Request, startTime time.Time) (RequestInfo, error) {
 	defer dontPanic()
 
 	headers := make(map[string]string)
-	for k, _ := range r.Header {
+	for k := range r.Header {
 		headers[k] = r.Header.Get(k)
 	}
 
@@ -42,7 +42,6 @@ func getRequestInfo(r *http.Request, startTime time.Time) (RequestInfo, error) {
 	}
 
 	if r.Body != nil && r.Body != http.NoBody {
-		sanitizedJsonString := make(map[string]interface{})
 		buf, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			return ri, err
@@ -58,7 +57,7 @@ func getRequestInfo(r *http.Request, startTime time.Time) (RequestInfo, error) {
 		}
 
 		// mask all the JSON fields listed in Config.KeysToMask
-		sanitizedJsonString, err = getMaskedJSON(body)
+		sanitizedJsonString, err := getMaskedJSON(body)
 		if err != nil {
 			return ri, err
 		}

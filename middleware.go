@@ -30,10 +30,15 @@ func Middleware(next http.Handler) http.Handler {
 		for k, v := range rec.Header() {
 			w.Header()[k] = v
 		}
+
 		// copy the original code
 		w.WriteHeader(rec.Code)
+
 		// write the original body
-		w.Write(rec.Body.Bytes())
+		_, err := w.Write(rec.Body.Bytes())
+		if err != nil {
+			return
+		}
 
 		if !errors.Is(errReqInfo, ErrNotJson) {
 			ti := MetaData{
