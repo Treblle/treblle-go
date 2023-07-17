@@ -32,10 +32,16 @@ func getRequestInfo(r *http.Request, startTime time.Time) (RequestInfo, error) {
 		headers[k] = r.Header.Get(k)
 	}
 
+	protocol := "http"
+	if r.Header.Get("X-Forwarded-Proto") == "https" || r.TLS != nil {
+		protocol = "https"
+	}
+	fullURL := protocol + "://" + r.Host + r.URL.RequestURI()
+
 	ri := RequestInfo{
 		Timestamp: startTime.Format("2006-01-02 15:04:05"),
 		Ip:        r.RemoteAddr,
-		Url:       r.RequestURI,
+		Url:       fullURL,
 		UserAgent: r.UserAgent(),
 		Method:    r.Method,
 		Headers:   headers,
