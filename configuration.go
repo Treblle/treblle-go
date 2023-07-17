@@ -12,7 +12,7 @@ type Configuration struct {
 // internalConfiguration is used for communication with Treblle API and contains optimizations
 type internalConfiguration struct {
 	Configuration
-	FieldsMap    map[string]interface{}
+	FieldsMap    map[string]bool
 	serverInfo   ServerInfo
 	languageInfo LanguageInfo
 }
@@ -26,14 +26,33 @@ func Configure(config Configuration) {
 	}
 	if len(config.FieldsToMask) > 0 {
 		Config.FieldsToMask = config.FieldsToMask
-
-		// transform the string slice to a map for faster retrieval
-		Config.FieldsMap = make(map[string]interface{})
-		for _, v := range config.FieldsToMask {
-			Config.FieldsMap[v] = nil
-		}
 	}
-
+	Config.FieldsMap = generateFieldsToMask(Config.FieldsToMask)
 	Config.serverInfo = getServerInfo()
 	Config.languageInfo = getLanguageInfo()
+}
+
+func generateFieldsToMask(additionalFieldsToMask []string) map[string]bool {
+	defaultFieldsToMask := []string{
+		"password",
+		"pwd",
+		"secret",
+		"password_confirmation",
+		"passwordConfirmation",
+		"cc",
+		"card_number",
+		"cardNumber",
+		"ccv",
+		"ssn",
+		"credit_score",
+		"creditScore",
+	}
+
+	fields := append(defaultFieldsToMask, additionalFieldsToMask...)
+	fieldsToMask := make(map[string]bool)
+	for _, field := range fields {
+		fieldsToMask[field] = true
+	}
+
+	return fieldsToMask
 }
