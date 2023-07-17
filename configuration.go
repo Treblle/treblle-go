@@ -4,9 +4,9 @@ var Config internalConfiguration
 
 // Configuration sets up and customizes communication with the Treblle API
 type Configuration struct {
-	APIKey       string
-	ProjectID    string
-	FieldsToMask []string
+	APIKey                 string
+	ProjectID              string
+	AdditionalFieldsToMask []string
 }
 
 // internalConfiguration is used for communication with Treblle API and contains optimizations
@@ -24,10 +24,10 @@ func Configure(config Configuration) {
 	if config.ProjectID != "" {
 		Config.ProjectID = config.ProjectID
 	}
-	if len(config.FieldsToMask) > 0 {
-		Config.FieldsToMask = config.FieldsToMask
+	if len(config.AdditionalFieldsToMask) > 0 {
+		Config.AdditionalFieldsToMask = config.AdditionalFieldsToMask
 	}
-	Config.FieldsMap = generateFieldsToMask(Config.FieldsToMask)
+	Config.FieldsMap = generateFieldsToMask(Config.AdditionalFieldsToMask)
 	Config.serverInfo = getServerInfo()
 	Config.languageInfo = getLanguageInfo()
 }
