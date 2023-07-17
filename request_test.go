@@ -31,7 +31,7 @@ func (s *TestSuite) Test_Masking() {
 	}
 
 	for tn, tc := range testCases {
-		Configure(Configuration{KeysToMask: []string{"password"}})
+		Configure(Configuration{FieldsToMask: []string{"password"}})
 		masked, err := getMaskedJSON(tc.input)
 		if tc.expectedErr != nil {
 			s.Require().Error(err, tn)
