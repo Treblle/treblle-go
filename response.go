@@ -7,12 +7,12 @@ import (
 )
 
 type ResponseInfo struct {
-	Headers  map[string]string      `json:"headers"`
-	Code     int                    `json:"code"`
-	Size     int                    `json:"size"`
-	LoadTime float64                `json:"load_time"`
-	Body     map[string]interface{} `json:"body"`
-	Errors   []ErrorInfo            `json:"errors"`
+	Headers  map[string]string `json:"headers"`
+	Code     int               `json:"code"`
+	Size     int               `json:"size"`
+	LoadTime float64           `json:"load_time"`
+	Body     json.RawMessage   `json:"body"`
+	Errors   []ErrorInfo       `json:"errors"`
 }
 
 type ErrorInfo struct {
@@ -29,7 +29,7 @@ func getResponseInfo(response *httptest.ResponseRecorder, startTime time.Time) R
 	responseBytes := response.Body.Bytes()
 
 	errInfo := ErrorInfo{}
-	var body map[string]interface{}
+	var body json.RawMessage
 	err := json.Unmarshal(responseBytes, &body)
 	if err != nil {
 		errInfo.Message = err.Error()
