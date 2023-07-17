@@ -92,7 +92,7 @@ func copyAndMaskJson(src map[string]interface{}, dest map[string]interface{}) {
 			copyAndMaskJson(src[key].(map[string]interface{}), dest[key].(map[string]interface{}))
 		default:
 			// if JSON key is in the list of keys to mask, replace it with a * string of the same length
-			_, exists := Config.KeysMap[key]
+			_, exists := Config.FieldsMap[key]
 			if exists {
 				re := regexp.MustCompile(".")
 				maskedValue := re.ReplaceAllString(value.(string), "*")

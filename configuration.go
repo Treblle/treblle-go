@@ -2,30 +2,22 @@ package treblle
 
 var Config internalConfiguration
 
-const defaultServerURL = "https://rocknrolla.treblle.com"
-
 // Configuration sets up and customizes communication with the Treblle API
 type Configuration struct {
 	APIKey       string
 	ProjectID    string
 	FieldsToMask []string
-	ServerURL    string
 }
 
 // internalConfiguration is used for communication with Treblle API and contains optimizations
 type internalConfiguration struct {
 	Configuration
-	KeysMap      map[string]interface{}
+	FieldsMap    map[string]interface{}
 	serverInfo   ServerInfo
 	languageInfo LanguageInfo
 }
 
 func Configure(config Configuration) {
-	if config.ServerURL != "" {
-		Config.ServerURL = config.ServerURL
-	} else {
-		Config.ServerURL = defaultServerURL
-	}
 	if config.APIKey != "" {
 		Config.APIKey = config.APIKey
 	}
@@ -36,9 +28,9 @@ func Configure(config Configuration) {
 		Config.FieldsToMask = config.FieldsToMask
 
 		// transform the string slice to a map for faster retrieval
-		Config.KeysMap = make(map[string]interface{})
+		Config.FieldsMap = make(map[string]interface{})
 		for _, v := range config.FieldsToMask {
-			Config.KeysMap[v] = nil
+			Config.FieldsMap[v] = nil
 		}
 	}
 
