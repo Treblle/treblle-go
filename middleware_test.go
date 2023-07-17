@@ -32,7 +32,7 @@ func (s *TestSuite) SetupSubTest() {
 	s.testServer = httptest.NewServer(s.router)
 	s.treblleMockMux = http.NewServeMux()
 	s.treblleMockServer = httptest.NewServer(s.treblleMockMux)
-	Configure(Configuration{ServerURL: s.treblleMockServer.URL, APIKey: "key", ProjectID: "project_id"})
+	Configure(Configuration{APIKey: "key", ProjectID: "project_id"})
 }
 
 func (s *TestSuite) TearDownSubTest() {

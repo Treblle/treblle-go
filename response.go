@@ -7,12 +7,12 @@ import (
 )
 
 type ResponseInfo struct {
-	Headers  map[string]string      `json:"headers"`
-	Code     int                    `json:"code"`
-	Size     int                    `json:"size"`
-	LoadTime float64                `json:"load_time"`
-	Body     map[string]interface{} `json:"body"`
-	Errors   []ErrorInfo            `json:"errors"`
+	Headers  json.RawMessage `json:"headers"`
+	Code     int             `json:"code"`
+	Size     int             `json:"size"`
+	LoadTime float64         `json:"load_time"`
+	Body     json.RawMessage `json:"body"`
+	Errors   []ErrorInfo     `json:"errors"`
 }
 
 type ErrorInfo struct {
@@ -29,7 +29,7 @@ func getResponseInfo(response *httptest.ResponseRecorder, startTime time.Time) R
 	responseBytes := response.Body.Bytes()
 
 	errInfo := ErrorInfo{}
-	var body map[string]interface{}
+	var body json.RawMessage
 	err := json.Unmarshal(responseBytes, &body)
 	if err != nil {
 		errInfo.Message = err.Error()
@@ -40,12 +40,19 @@ func getResponseInfo(response *httptest.ResponseRecorder, startTime time.Time) R
 		headers[k] = response.Header().Get(k)
 	}
 
-	return ResponseInfo{
-		Headers:  headers,
+	re := ResponseInfo{
 		Code:     response.Code,
 		Size:     len(responseBytes),
 		LoadTime: float64(time.Since(startTime).Microseconds()),
 		Body:     body,
 		Errors:   []ErrorInfo{errInfo},
 	}
+	bodyJson, _ := json.Marshal(body)
+	sanitizedBody, _ := getMaskedJSON(bodyJson)
+	re.Body = sanitizedBody
+
+	headersJson, _ := json.Marshal(headers)
+	sanitizedHeaders, _ := getMaskedJSON(headersJson)
+	re.Headers = sanitizedHeaders
+	return re
 }
