@@ -6,8 +6,10 @@ import (
 	"errors"
 	"io"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"regexp"
+	"strings"
 	"time"
 )
 
@@ -37,10 +39,11 @@ func getRequestInfo(r *http.Request, startTime time.Time) (RequestInfo, error) {
 		protocol = "https"
 	}
 	fullURL := protocol + "://" + r.Host + r.URL.RequestURI()
+	ip := extractIP(r.RemoteAddr)
 
 	ri := RequestInfo{
 		Timestamp: startTime.Format("2006-01-02 15:04:05"),
-		Ip:        r.RemoteAddr,
+		Ip:        ip,
 		Url:       fullURL,
 		UserAgent: r.UserAgent(),
 		Method:    r.Method,
@@ -108,4 +111,15 @@ func copyAndMaskJson(src map[string]interface{}, dest map[string]interface{}) {
 			}
 		}
 	}
+}
+func extractIP(remoteAddr string) string {
+	// If RemoteAddr contains both IP and port, split and return the IP
+	if strings.Contains(remoteAddr, ":") {
+		ip, _, err := net.SplitHostPort(remoteAddr)
+		if err == nil {
+			return ip
+		}
+	}
+
+	return remoteAddr
 }
