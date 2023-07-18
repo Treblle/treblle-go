@@ -72,18 +72,18 @@ func getRequestInfo(r *http.Request, startTime time.Time) (RequestInfo, error) {
 
 		ri.Body = sanitizedBody
 
-		headersJson, err := json.Marshal(headers)
-		if err != nil {
-			return ri, err
-		}
-
-		sanitizedHeaders, err := getMaskedJSON(headersJson)
-
-		if err != nil {
-			return ri, err
-		}
-		ri.Headers = sanitizedHeaders
 	}
+	headersJson, err := json.Marshal(headers)
+	if err != nil {
+		return ri, err
+	}
+
+	sanitizedHeaders, err := getMaskedJSON(headersJson)
+
+	if err != nil {
+		return ri, err
+	}
+	ri.Headers = sanitizedHeaders
 	return ri, nil
 }
 
@@ -94,8 +94,8 @@ func recoverBody(r *http.Request, bodyReaderCopy io.ReadCloser) {
 func getMaskedJSON(payloadToMask []byte) (json.RawMessage, error) {
 	jsonMap := make(map[string]interface{})
 	if err := json.Unmarshal(payloadToMask, &jsonMap); err != nil {
-		// not a valid json request
-		return nil, ErrNotJson
+		// probably a JSON array so let's return it.
+		return payloadToMask, nil
 	}
 
 	sanitizedJson := make(map[string]interface{})

@@ -2,6 +2,7 @@ package treblle
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http/httptest"
 	"time"
 )
@@ -44,9 +45,9 @@ func getResponseInfo(response *httptest.ResponseRecorder, startTime time.Time) R
 		Code:     response.Code,
 		Size:     len(responseBytes),
 		LoadTime: float64(time.Since(startTime).Microseconds()),
-		Body:     body,
 		Errors:   []ErrorInfo{errInfo},
 	}
+
 	bodyJson, _ := json.Marshal(body)
 	sanitizedBody, _ := getMaskedJSON(bodyJson)
 	re.Body = sanitizedBody
@@ -54,5 +55,11 @@ func getResponseInfo(response *httptest.ResponseRecorder, startTime time.Time) R
 	headersJson, _ := json.Marshal(headers)
 	sanitizedHeaders, _ := getMaskedJSON(headersJson)
 	re.Headers = sanitizedHeaders
+	var jsonData interface{}
+
+	err = json.Unmarshal(sanitizedHeaders, &jsonData)
+	if err != nil {
+		fmt.Println("Error parsing raw message:", err)
+	}
 	return re
 }
