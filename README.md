@@ -133,13 +133,6 @@ apiRouter.Use(treblle.Middleware) // Set as a middleware for this subroute
 apiRouter.HandleFunc("/users", yourHandler)
 ```
 
-## gorilla/mux
-To setup the `treblle.Middleware` in `gorilla/mux`, use it as a global middleware:
-
-```go
-  r := mux.NewRouter()
-	r.Use(treblle.Middleware)
-```
 
 > See the [docs](https://docs.treblle.com/en/integrations/go) for this SDK to learn more.
 
