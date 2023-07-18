@@ -82,8 +82,7 @@ func main() {
 	treblle.Configure(treblle.Configuration{
 		APIKey:     "YOUR API KEY HERE",
 		ProjectID:  "YOUR PROJECT ID HERE",
-		KeysToMask: []string{"password", "card_number"}, // optional, mask fields you don't want sent to Treblle
-		ServerURL:  "https://rocknrolla.treblle.com",    // optional, don't use default server URL
+		AdditionalFieldsToMask: []string{"password", "card_number"}, // optional, specify additional fields to mask
 	}
 
     // rest of your program.
@@ -96,6 +95,14 @@ After that, just use the middleware with any of your handlers:
 ```go
 mux := http.NewServeMux()
 mux.Handle("/", treblle.Middleware(yourHandler))
+```
+
+## gorilla/mux
+To setup the `treblle.Middleware` in `gorilla/mux`, use it as a global middleware:
+
+```go
+  r := mux.NewRouter()
+	r.Use(treblle.Middleware)
 ```
 
 > See the [docs](https://docs.treblle.com/en/integrations/go) for this SDK to learn more.
