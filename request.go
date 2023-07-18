@@ -94,8 +94,8 @@ func recoverBody(r *http.Request, bodyReaderCopy io.ReadCloser) {
 func getMaskedJSON(payloadToMask []byte) (json.RawMessage, error) {
 	jsonMap := make(map[string]interface{})
 	if err := json.Unmarshal(payloadToMask, &jsonMap); err != nil {
-		// not a valid json request
-		return nil, ErrNotJson
+		// probably a JSON array so let's return it.
+		return payloadToMask, nil
 	}
 
 	sanitizedJson := make(map[string]interface{})

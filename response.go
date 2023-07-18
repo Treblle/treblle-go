@@ -45,9 +45,9 @@ func getResponseInfo(response *httptest.ResponseRecorder, startTime time.Time) R
 		Code:     response.Code,
 		Size:     len(responseBytes),
 		LoadTime: float64(time.Since(startTime).Microseconds()),
-		Body:     body,
 		Errors:   []ErrorInfo{errInfo},
 	}
+
 	bodyJson, _ := json.Marshal(body)
 	sanitizedBody, _ := getMaskedJSON(bodyJson)
 	re.Body = sanitizedBody
