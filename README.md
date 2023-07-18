@@ -67,11 +67,15 @@ This means data masking is super fast and happens on a programming level before 
 2. [Create a Treblle project](https://docs.treblle.com/en/dashboard/projects#creating-a-project).
 3. [Setup the SDK](#install-the-SDK) for your platform.
 
-### Install the SDK
+## Installation
 
-```sh
+Trebble uses [Go Modules](https://github.com/golang/go/wiki/Modules) to manage dependencies.
+
+```shell
 go get github.com/treblle/treblle-go
 ```
+
+## Basic configuration
 
 Configure Treblle at the start of your `main()` function:
 
@@ -82,7 +86,7 @@ func main() {
 	treblle.Configure(treblle.Configuration{
 		APIKey:     "YOUR API KEY HERE",
 		ProjectID:  "YOUR PROJECT ID HERE",
-		AdditionalFieldsToMask: []string{"password", "card_number"}, // optional, specify additional fields to mask
+    AdditionalFieldsToMask: []string{"password", "card_number"}, // optional, specify additional fields to mask
 	}
 
     // rest of your program.
@@ -94,15 +98,39 @@ After that, just use the middleware with any of your handlers:
 
 ```go
 mux := http.NewServeMux()
-mux.Handle("/", treblle.Middleware(yourHandler))
+mux.Handle("/", treblle.Middleware(http.HandlerFunc(yourHandler)))
 ```
 
 ## gorilla/mux
-To setup the `treblle.Middleware` in `gorilla/mux`, use it as a global middleware:
+
+To setup the `treblle.Middleware` in `gorilla/mux`, you can use it as a global middleware:
 
 ```go
-  r := mux.NewRouter()
-	r.Use(treblle.Middleware)
+r := mux.NewRouter()
+r.Use(treblle.Middleware)
+```
+
+### per-route
+
+You can also use `treblle.Middleware` as a per-route middleware just like you will use it with `net/http`:
+
+```go
+r := mux.NewRouter()
+r.Handle("/", treblle.Middleware(http.HandlerFunc(yourHandler)))
+```
+
+### Subroutes
+
+You can also use `treblle.Middleware` on `gorilla/mux` subroutes:
+
+```go
+r := mux.NewRouter()
+
+apiRouter := r.PathPrefix("/api").Subrouter()
+
+apiRouter.Use(treblle.Middleware) // Set as a middleware for this subroute
+
+apiRouter.HandleFunc("/users", yourHandler)
 ```
 
 > See the [docs](https://docs.treblle.com/en/integrations/go) for this SDK to learn more.
