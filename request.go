@@ -72,18 +72,18 @@ func getRequestInfo(r *http.Request, startTime time.Time) (RequestInfo, error) {
 
 		ri.Body = sanitizedBody
 
-		headersJson, err := json.Marshal(headers)
-		if err != nil {
-			return ri, err
-		}
-
-		sanitizedHeaders, err := getMaskedJSON(headersJson)
-
-		if err != nil {
-			return ri, err
-		}
-		ri.Headers = sanitizedHeaders
 	}
+	headersJson, err := json.Marshal(headers)
+	if err != nil {
+		return ri, err
+	}
+
+	sanitizedHeaders, err := getMaskedJSON(headersJson)
+
+	if err != nil {
+		return ri, err
+	}
+	ri.Headers = sanitizedHeaders
 	return ri, nil
 }
 
