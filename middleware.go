@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	treblleVersion = "0.7.1"
+	treblleVersion = "0.7.2"
 	sdkName        = "go"
 )
 
