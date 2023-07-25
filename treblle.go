@@ -12,7 +12,15 @@ const (
 	timeoutDuration = 2 * time.Second
 )
 
+type BaseUrlOptions struct {
+	Debug bool
+}
+
 func getTreblleBaseUrl() string {
+	if Config.Debug {
+		return "https://debug.treblle.com/"
+	}
+
 	treblleBaseUrls := []string{
 		"https://rocknrolla.treblle.com",
 		"https://punisher.treblle.com",
