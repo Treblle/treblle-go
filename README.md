@@ -86,7 +86,7 @@ func main() {
 	treblle.Configure(treblle.Configuration{
 		APIKey:     "YOUR API KEY HERE",
 		ProjectID:  "YOUR PROJECT ID HERE",
-		AdditionalFieldsToMask: []string{"password", "card_number"}, // optional, specify additional fields to mask
+    AdditionalFieldsToMask: []string{"password", "card_number"}, // optional, specify additional fields to mask
 	}
 
     // rest of your program.

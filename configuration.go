@@ -15,6 +15,7 @@ type internalConfiguration struct {
 	FieldsMap    map[string]bool
 	serverInfo   ServerInfo
 	languageInfo LanguageInfo
+	Debug        bool
 }
 
 func Configure(config Configuration) {
