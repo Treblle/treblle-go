@@ -2,8 +2,9 @@ package treblle
 
 import (
 	"encoding/json"
-	"fmt"
+	"errors"
 	"net/http/httptest"
+	"strings"
 	"time"
 )
 
@@ -27,39 +28,95 @@ type ErrorInfo struct {
 // Extract information from the response recorder
 func getResponseInfo(response *httptest.ResponseRecorder, startTime time.Time) ResponseInfo {
 	defer dontPanic()
-	responseBytes := response.Body.Bytes()
-
-	errInfo := ErrorInfo{}
-	var body json.RawMessage
-	err := json.Unmarshal(responseBytes, &body)
-	if err != nil {
-		errInfo.Message = err.Error()
-	}
-
-	headers := make(map[string]string)
-	for k := range response.Header() {
-		headers[k] = response.Header().Get(k)
-	}
 
 	re := ResponseInfo{
 		Code:     response.Code,
-		Size:     len(responseBytes),
+		Size:     len(response.Body.Bytes()),
 		LoadTime: float64(time.Since(startTime).Microseconds()),
 		Errors:   []ErrorInfo{},
 	}
 
-	bodyJson, _ := json.Marshal(body)
-	sanitizedBody, _ := getMaskedJSON(bodyJson)
-	re.Body = sanitizedBody
+	// Handle response body
+	if bodyBytes := response.Body.Bytes(); len(bodyBytes) > 0 {
+		// Try to mask if it's JSON
+		sanitizedBody, err := getMaskedJSON(bodyBytes)
+		if err != nil {
+			// For non-JSON responses, just store the raw body as a JSON string
+			if errors.Is(err, ErrNotJson) {
+				// Create a JSON-encoded string without extra quotes
+				jsonBytes, err := json.Marshal(string(bodyBytes))
+				if err != nil {
+					re.Errors = append(re.Errors, ErrorInfo{
+						Source:  "response",
+						Type:    "body_encoding_error",
+						Message: err.Error(),
+					})
+				}
+				re.Body = json.RawMessage(jsonBytes)
+			} else {
+				re.Errors = append(re.Errors, ErrorInfo{
+					Source:  "response",
+					Type:    "body_masking_error",
+					Message: err.Error(),
+				})
+				jsonBytes, _ := json.Marshal(string(bodyBytes))
+				re.Body = json.RawMessage(jsonBytes)
+			}
+		} else {
+			re.Body = sanitizedBody
+		}
+	}
+
+	// Handle response headers
+	headers := make(map[string]interface{})
+	for k, v := range response.Header() {
+		if len(v) == 1 {
+			if shouldMaskField(k) {
+				if strings.ToLower(k) == "authorization" {
+					parts := strings.SplitN(v[0], " ", 2)
+					if len(parts) == 2 {
+						headers[k] = parts[0] + " " + strings.Repeat("*", 9)
+					} else {
+						headers[k] = strings.Repeat("*", 9)
+					}
+				} else {
+					headers[k] = strings.Repeat("*", 9)
+				}
+			} else {
+				headers[k] = v[0]
+			}
+		} else {
+			if shouldMaskField(k) {
+				masked := make([]string, len(v))
+				for i := range v {
+					masked[i] = strings.Repeat("*", 9)
+				}
+				headers[k] = masked
+			} else {
+				headers[k] = v
+			}
+		}
+	}
 
 	headersJson, _ := json.Marshal(headers)
-	sanitizedHeaders, _ := getMaskedJSON(headersJson)
-	re.Headers = sanitizedHeaders
-	var jsonData interface{}
+	re.Headers = json.RawMessage(headersJson)
 
-	err = json.Unmarshal(sanitizedHeaders, &jsonData)
-	if err != nil {
-		fmt.Println("Error parsing raw message:", err)
-	}
 	return re
+}
+
+// Helper function to check if a header should be masked
+func shouldMaskHeader(headerName string) bool {
+	// Convert common header variations to lowercase for consistent matching
+	headerVariations := []string{
+		headerName,
+		"x-" + headerName,
+		"x_" + headerName,
+	}
+
+	for _, h := range headerVariations {
+		if _, exists := Config.FieldsMap[h]; exists {
+			return true
+		}
+	}
+	return false
 }

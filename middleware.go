@@ -17,6 +17,7 @@ func Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		startTime := time.Now()
 
+		// Get request info before processing
 		requestInfo, errReqInfo := getRequestInfo(r, startTime)
 
 		// intercept the response so it can be copied
@@ -40,7 +41,10 @@ func Middleware(next http.Handler) http.Handler {
 			return
 		}
 
-		if !errors.Is(errReqInfo, ErrNotJson) {
+		// Only send to Treblle if:
+		// 1. The request was valid JSON (or had no body)
+		// 2. The response is successful (2xx status)
+		if !errors.Is(errReqInfo, ErrNotJson) && rec.Code >= 200 && rec.Code < 300 {
 			ti := MetaData{
 				ApiKey:    Config.APIKey,
 				ProjectID: Config.ProjectID,
