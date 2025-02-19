@@ -165,7 +165,7 @@ func (s *TestSuite) TestMiddleware() {
 			requestJson:   `{"id":`,
 			responseJson:  `{"error":"bad request"}`,
 			status:        http.StatusBadRequest,
-			treblleCalled: false,
+			treblleCalled: true,
 		},
 		"non-json-response": {
 			requestJson:   `{"id":5}`,

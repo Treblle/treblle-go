@@ -88,6 +88,8 @@ func getDefaultFieldsToMask() []string {
 		"ssn",
 		"credit_score",
 		"creditScore",
+		"api_key",
+		"apiKey",
 	}
 }
 
