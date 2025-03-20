@@ -223,7 +223,3 @@ Here are some ways of contributing to making Treblle better:
 - **[Try out Treblle](https://docs.treblle.com/en/introduction#getting-started)**, and let us know ways to make Treblle better for you. Let us know here on [Discord](https://treblle.com/chat).
 - Join our [Discord](https://treblle.com/chat) and connect with other members to share and learn from.
 - Send a pull request to any of our [open source repositories](https://github.com/Treblle) on Github. Check the contribution guide on the repo you want to contribute to for more details about how to contribute. We're looking forward to your contribution!
-
-### Contributors
-
-![Contributors](https://contrib.rocks/image?repo=Treblle/treblle-go)
