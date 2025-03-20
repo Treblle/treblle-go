@@ -21,7 +21,7 @@ func TestSDKVersioning(t *testing.T) {
 	// Test GetSDKInfo function
 	info := GetSDKInfo()
 	assert.Equal(t, "go", info["SDK Name"])
-	assert.Equal(t, "2.0.0", info["SDK Version"])
+	assert.Equal(t, 2.0, info["SDK Version"])
 
 	// Set environment variables and reconfigure
 	os.Setenv("TREBLLE_SDK_VERSION", "2.1.0")

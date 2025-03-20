@@ -35,7 +35,7 @@ func getUsersHandler(w http.ResponseWriter, r *http.Request) {
 		createUserHandler(w, r)
 		return
 	}
-	
+
 	// Otherwise, handle as GET request
 	// Simulate getting users from database
 	users := []User{
@@ -56,7 +56,7 @@ func createUserHandler(w http.ResponseWriter, r *http.Request) {
 		ApiKey   string `json:"api_key"`
 		CcNumber string `json:"credit_card"`
 	}
-	
+
 	err := json.NewDecoder(r.Body).Decode(&newUser)
 	if err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
@@ -81,8 +81,8 @@ func createUserHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	// Configure Treblle
 	treblle.Configure(treblle.Configuration{
-		APIKey:    "Treblle API key", // Set your Treblle API key
-		ProjectID: "Treblle Project ID",                                                  // Set your Treblle Project ID
+		APIKey:    "Treblle API key",    // Set your Treblle API key
+		ProjectID: "Treblle Project ID", // Set your Treblle Project ID
 	})
 
 	// Create a new serve mux

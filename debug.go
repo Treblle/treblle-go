@@ -2,6 +2,7 @@ package treblle
 
 import (
 	"fmt"
+	"strconv"
 )
 
 // DebugCommand prints Treblle SDK configuration information
@@ -36,7 +37,7 @@ func DebugCommand() {
 	}
 
 	// Display basic SDK configuration
-	fmt.Println("SDK Version:", Config.SDKVersion)
+	fmt.Println("SDK Version:", strconv.FormatFloat(Config.SDKVersion, 'f', 1, 64))
 	fmt.Println("Project ID:", maskString(Config.ProjectID))
 	fmt.Println("API Key:", maskString(Config.APIKey))
 	fmt.Println("Configured Treblle URL:", getConfiguredEndpoint())

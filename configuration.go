@@ -2,6 +2,7 @@ package treblle
 
 import (
 	"os"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -20,7 +21,7 @@ type Configuration struct {
 	BatchErrorSize          int           // Size of error batch before sending
 	BatchFlushInterval      time.Duration // Interval to flush errors if batch size not reached
 	SDKName                 string        // Defaults to "go"
-	SDKVersion              string        // Defaults to "1.0.0"
+	SDKVersion              float64       // Defaults to 2.0
 	AsyncProcessingEnabled  bool          // Enable asynchronous request processing
 	MaxConcurrentProcessing int           // Maximum number of concurrent async operations (default: 10)
 	AsyncShutdownTimeout    time.Duration // Timeout for async shutdown (default: 5s)
@@ -42,7 +43,7 @@ type internalConfiguration struct {
 	Debug                   bool
 	batchErrorCollector     *BatchErrorCollector
 	SDKName                 string
-	SDKVersion              string
+	SDKVersion              float64
 	AsyncProcessingEnabled  bool
 	MaxConcurrentProcessing int
 	AsyncShutdownTimeout    time.Duration
@@ -59,7 +60,7 @@ func Configure(config Configuration) {
 	if config.Endpoint != "" {
 		Config.Endpoint = config.Endpoint
 	}
-	
+
 	// Set debug mode
 	Config.Debug = config.Debug
 
@@ -71,18 +72,23 @@ func Configure(config Configuration) {
 	Config.MaskingEnabled = true // Enable by default
 
 	// Set SDK Name and Version (Can be overridden via ENV)
-	sdkName := SDKName
+	sdkName := "go"
 	if config.SDKName != "" {
 		sdkName = config.SDKName
 	}
 
-	sdkVersion := SDKVersion
-	if config.SDKVersion != "" {
+	sdkVersion := 2.0
+	if config.SDKVersion != 0 {
 		sdkVersion = config.SDKVersion
 	}
 
+	sdkVersionEnv, err := strconv.ParseFloat(os.Getenv("TREBLLE_SDK_VERSION"), 64)
+	if err == nil {
+		sdkVersion = sdkVersionEnv
+	}
+
 	Config.SDKName = getEnvOrDefault("TREBLLE_SDK_NAME", sdkName)
-	Config.SDKVersion = getEnvOrDefault("TREBLLE_SDK_VERSION", sdkVersion)
+	Config.SDKVersion = sdkVersion
 
 	// Configure async processing
 	Config.AsyncProcessingEnabled = config.AsyncProcessingEnabled
@@ -190,7 +196,7 @@ func getEnvOrDefault(envKey, defaultValue string) string {
 func GetSDKInfo() map[string]string {
 	return map[string]string{
 		"SDK Name":    Config.SDKName,
-		"SDK Version": Config.SDKVersion,
+		"SDK Version": strconv.FormatFloat(Config.SDKVersion, 'f', 2, 64),
 	}
 }
 

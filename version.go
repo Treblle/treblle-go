@@ -3,5 +3,5 @@ package treblle
 // SDK Versioning
 const (
 	SDKName    = "go"
-	SDKVersion = "2.0.0"
+	SDKVersion = 2.0
 )

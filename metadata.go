@@ -14,7 +14,7 @@ import (
 type MetaData struct {
 	ApiKey    string   `json:"api_key"`
 	ProjectID string   `json:"project_id"`
-	Version   string   `json:"version"`
+	Version   float64  `json:"version"`
 	Sdk       string   `json:"sdk"`
 	Data      DataInfo `json:"data"`
 }

@@ -59,7 +59,7 @@ func (s *TestSuite) TestJsonFormat() {
 	sampleData := map[string]interface{}{
 		"api_key":    "",
 		"project_id": "",
-		"version":    "0.6",
+		"version":    0.6,
 		"sdk":        "laravel",
 		"data": map[string]interface{}{
 			"server": map[string]interface{}{

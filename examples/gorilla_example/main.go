@@ -32,7 +32,7 @@ func getUserHandler(w http.ResponseWriter, r *http.Request) {
 
 func createUserHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("POST request received to /users")
-	
+
 	// Parse the request body
 	var newUser struct {
 		Name     string `json:"name"`
@@ -41,20 +41,20 @@ func createUserHandler(w http.ResponseWriter, r *http.Request) {
 		ApiKey   string `json:"api_key"`
 		CcNumber string `json:"credit_card"`
 	}
-	
+
 	// Read the body content for debugging
 	bodyBytes, _ := io.ReadAll(r.Body)
 	r.Body = io.NopCloser(bytes.NewBuffer(bodyBytes)) // Reset the body
-	
+
 	log.Printf("Request body: %s\n", string(bodyBytes))
-	
+
 	err := json.NewDecoder(bytes.NewBuffer(bodyBytes)).Decode(&newUser)
 	if err != nil {
 		log.Printf("Error decoding JSON: %v\n", err)
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
-	
+
 	log.Printf("Received user data: %+v\n", newUser)
 
 	// Create a response with masked data
@@ -70,7 +70,7 @@ func createUserHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(response)
-	
+
 	log.Println("POST request processed successfully")
 }
 
@@ -88,8 +88,8 @@ func getUsersHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	// Configure Treblle
 	treblle.Configure(treblle.Configuration{
-		APIKey:    "Treblle API key", // Set your Treblle API key
-		ProjectID: "Treblle Project ID",                                                  // Set your Treblle Project ID
+		APIKey:    "Treblle API key",    // Set your Treblle API key
+		ProjectID: "Treblle Project ID", // Set your Treblle Project ID
 	})
 
 	// Create a new router
