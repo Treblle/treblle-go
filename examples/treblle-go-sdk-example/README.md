@@ -13,15 +13,45 @@ This repository demonstrates how to integrate the [Treblle SDK](https://github.c
 ## Prerequisites
 
 - Go 1.16 or higher
-- [ngrok](https://ngrok.com/) for exposing your local server to the internet (Only for Testing purposes)
+- Tunneling tool ( To expose your local server securely)
+
+## Setting up Treblle
+
+### 1. Create a Treblle Account
+
+    If you don't have a Treblle account, go to [treblle.com](https://treblle.com) and create an account.
+
+### 2. Create a New API Project
+
+1. Once logged in, navigate to the dashboard and click on "Add New API".
+
+   ![Treblle Add New API]()
+
+2. Fill in the API details:
+   - API Name (e.g., "Treblle_Go_SDK_Test_API")
+   - Base URL (the URL where your API will be hosted, e.g., your ngrok URL)
+   - Environment (e.g., "Development")
+   - Platform (select "Go")
+
+   ![Treblle API Setup]()
+
+3. Click "Add New API" to create your project.
+
+### 3. Get Your API Key and Project ID
+
+1. After creating the API, go to "API Settings" to find your credentials.
+
+   ![Treblle API Settings]()
+
+2. Copy your API Key and Project ID. You'll need these to configure the SDK in your application.
 
 ## Installation
 
-1. Clone this repository:
+1. Clone the SDK repository and navigate to the examples folder:
 
    ```bash
-   git clone https://github.com/timpratim/treblle-go-sdk-example.git
-   cd ngroktest
+   git clone https://github.com/Treblle/treblle-go.git
+   cd treblle-go/examples/treblle-go-sdk-example
    ```
 
 2. Install dependencies:
@@ -46,13 +76,17 @@ This repository demonstrates how to integrate the [Treblle SDK](https://github.c
    go run main.go
    ```
 
-2. In a separate terminal, start ngrok to expose your server:
+2. In a separate terminal, start a tunneling tool (this example uses ngrok) to expose your server:
 
    ```bash
    ngrok http 8085
    ```
 
-3. Use the provided ngrok URL to access your API.
+3. Use the provided proxy URL to access your API.
+
+4. Once your API is running, you'll be able to see your API requests in the Treblle dashboard:
+
+   ![Treblle Dashboard]()
 
 ## API Endpoints
 
@@ -60,11 +94,9 @@ This repository demonstrates how to integrate the [Treblle SDK](https://github.c
 - `GET /api/v1/users/{id}` - Get a specific user
 - `POST /api/v1/users` - Create a new user
 
-## Treblle Integration
+## Setup Treblle Middleware
 
-### Basic Integration
-
-The basic Treblle integration is set up in the `main.go` file:
+The Treblle middleware is set up in the `main.go` file:
 
 ```go
 treblle.Configure(treblle.Configuration{
@@ -81,15 +113,14 @@ api := r.PathPrefix("/api/v1").Subrouter()
 api.Use(treblle.Middleware)
 ```
 
-### User Tracking with Treblle
+### Customer Tracking with Treblle
 
-This example includes a custom middleware that adds user tracking capabilities to Treblle:
+Treblle allows you to track your API's customers with the help of Treblle headers `treblle-user-id` and `treblle-tag-id`
 
 ```go
-// Custom middleware to add Treblle user ID and trace ID headers
+
 func addTreblleHeadersMiddleware(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        // In a real application, you would get the user from the session, JWT token, etc.
         // For demonstration purposes, we'll check for a user ID in a custom header
         userID := r.Header.Get("X-User-ID")
         if userID != "" {
@@ -130,10 +161,10 @@ You can use the included `test-request.sh` script to test the API with user trac
 
 This script sends requests with the `X-User-ID` and `X-Trace-ID` headers, which are then transformed into Treblle headers for tracking in the dashboard.
 
-Example curl command:
+You can use [Aspen](https://treblle.com/product/aspen) to test the API or use a curl command:
 
 ```bash
-curl -X POST "https://your-ngrok-url.ngrok-free.app/api/v1/users" \
+curl -X POST "https://your-proxy-url.app/api/v1/users" \
   -H "Content-Type: application/json" \
   -H "X-User-ID: 12345" \
   -H "X-Trace-ID: test-trace-123" \
