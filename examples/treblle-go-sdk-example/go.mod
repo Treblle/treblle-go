@@ -10,4 +10,4 @@ require (
 
 require golang.org/x/sync v0.12.0 // indirect
 
-replace github.com/treblle/treblle-go => github.com/timpratim/treblle-go v0.0.0-20250320143411-3eef80962292
+replace github.com/treblle/treblle-go => github.com/timpratim/treblle-go v0.0.0-20250325145413-71c3af83a8c4
