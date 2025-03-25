@@ -12,8 +12,8 @@ import (
 )
 
 type MetaData struct {
-	ApiKey    string   `json:"api_key"`
-	ProjectID string   `json:"project_id"`
+	ApiKey    string   `json:"api_key"`    // Renamed internally but kept the same JSON field name
+	ProjectID string   `json:"project_id"` // Renamed internally but kept the same JSON field name
 	Version   float64  `json:"version"`
 	Sdk       string   `json:"sdk"`
 	Data      DataInfo `json:"data"`

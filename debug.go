@@ -12,8 +12,8 @@ func DebugCommand() {
 	// Initialize configuration from environment variables if not already set
 	if Config.APIKey == "" {
 		// Read configuration from environment variables
-		apiKey := getEnvOrDefault("TREBLLE_API_KEY", "")
-		projectID := getEnvOrDefault("TREBLLE_PROJECT_ID", "")
+		apiKey := getEnvOrDefault("TREBLLE_SDK_TOKEN", "")
+		projectID := getEnvOrDefault("TREBLLE_API_KEY", "")
 		endpoint := getEnvOrDefault("TREBLLE_ENDPOINT", "")
 		ignoredEnvs := getEnvAsSlice("TREBLLE_IGNORED_ENVIRONMENTS", []string{"local", "development"})
 		
@@ -38,8 +38,8 @@ func DebugCommand() {
 
 	// Display basic SDK configuration
 	fmt.Println("SDK Version:", strconv.FormatFloat(Config.SDKVersion, 'f', 1, 64))
-	fmt.Println("Project ID:", maskString(Config.ProjectID))
-	fmt.Println("API Key:", maskString(Config.APIKey))
+	fmt.Println("API Key:", maskString(Config.ProjectID))
+	fmt.Println("SDK Token:", maskString(Config.APIKey))
 	fmt.Println("Configured Treblle URL:", getConfiguredEndpoint())
 	fmt.Println("Ignored Environments:", Config.IgnoredEnvironments)
 }

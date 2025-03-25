@@ -11,8 +11,8 @@ import (
 func TestShutdown(t *testing.T) {
 	// Configure Treblle for testing
 	Configure(Configuration{
-		APIKey:    "test-api-key",
-		ProjectID: "test-project-id",
+		SDK_TOKEN: "test-sdk-token",
+		API_KEY:   "test-api-key",
 		Endpoint:  "https://test-endpoint.treblle.com", // Use a test endpoint
 	})
 
@@ -92,12 +92,12 @@ func TestShutdown(t *testing.T) {
 func TestGracefulShutdown(t *testing.T) {
 	// Configure Treblle with batch error collector
 	Configure(Configuration{
-		APIKey:            "test-api-key",
-		ProjectID:         "test-project-id",
-		Endpoint:          "https://test-endpoint.treblle.com",
-		BatchErrorEnabled: true,
-		BatchErrorSize:    10,
-		BatchFlushInterval: 5 * time.Second,
+		SDK_TOKEN:              "test-sdk-token",
+		API_KEY:                "test-api-key",
+		Endpoint:             "https://test-endpoint.treblle.com",
+		BatchErrorEnabled:    true,
+		BatchErrorSize:       10,
+		BatchFlushInterval:   5 * time.Second,
 	})
 	
 	// Add some errors to the batch collector

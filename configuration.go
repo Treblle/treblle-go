@@ -11,8 +11,8 @@ var Config internalConfiguration
 
 // Configuration sets up and customizes communication with the Treblle API
 type Configuration struct {
-	APIKey                  string
-	ProjectID               string
+	SDK_TOKEN               string
+	API_KEY                 string
 	AdditionalFieldsToMask  []string
 	DefaultFieldsToMask     []string
 	MaskingEnabled          bool
@@ -47,15 +47,15 @@ type internalConfiguration struct {
 	AsyncProcessingEnabled  bool
 	MaxConcurrentProcessing int
 	AsyncShutdownTimeout    time.Duration
-	IgnoredEnvironments     []string // Environments where Treblle does not track requests
+	IgnoredEnvironments     []string
 }
 
 func Configure(config Configuration) {
-	if config.APIKey != "" {
-		Config.APIKey = config.APIKey
+	if config.SDK_TOKEN != "" {
+		Config.APIKey = config.SDK_TOKEN
 	}
-	if config.ProjectID != "" {
-		Config.ProjectID = config.ProjectID
+	if config.API_KEY != "" {
+		Config.ProjectID = config.API_KEY
 	}
 	if config.Endpoint != "" {
 		Config.Endpoint = config.Endpoint
@@ -65,11 +65,11 @@ func Configure(config Configuration) {
 	Config.Debug = config.Debug
 
 	// Initialize server and language info
-	Config.serverInfo = GetServerInfo(nil) // Pass nil as request, protocol will be updated in middleware
+	Config.serverInfo = GetServerInfo(nil)
 	Config.languageInfo = GetLanguageInfo()
 
 	// Initialize default masking settings
-	Config.MaskingEnabled = true // Enable by default
+	Config.MaskingEnabled = true
 
 	// Set SDK Name and Version (Can be overridden via ENV)
 	sdkName := "go"
@@ -94,21 +94,19 @@ func Configure(config Configuration) {
 	Config.AsyncProcessingEnabled = config.AsyncProcessingEnabled
 	Config.MaxConcurrentProcessing = config.MaxConcurrentProcessing
 	if Config.MaxConcurrentProcessing <= 0 {
-		Config.MaxConcurrentProcessing = 10 // Default to 10 concurrent operations
+		Config.MaxConcurrentProcessing = 10
 	}
 
 	Config.AsyncShutdownTimeout = config.AsyncShutdownTimeout
 	if Config.AsyncShutdownTimeout <= 0 {
-		Config.AsyncShutdownTimeout = 5 * time.Second // Default to 5 seconds
+		Config.AsyncShutdownTimeout = 5 * time.Second
 	}
 
 	// Initialize batch error collector if enabled
 	if config.BatchErrorEnabled {
-		// Close existing collector if any
 		if Config.batchErrorCollector != nil {
 			Config.batchErrorCollector.Close()
 		}
-		// Create new batch error collector
 		Config.batchErrorCollector = NewBatchErrorCollector(config.BatchErrorSize, config.BatchFlushInterval)
 	}
 
@@ -131,7 +129,6 @@ func Configure(config Configuration) {
 	if len(config.IgnoredEnvironments) > 0 {
 		Config.IgnoredEnvironments = config.IgnoredEnvironments
 	} else {
-		// Default ignored environments: dev, test, testing
 		defaultIgnoredEnvs := []string{"dev", "test", "testing"}
 		Config.IgnoredEnvironments = getEnvAsSlice("TREBLLE_IGNORED_ENV", defaultIgnoredEnvs)
 	}
@@ -139,7 +136,6 @@ func Configure(config Configuration) {
 	Config.FieldsMap = generateFieldsToMask(Config.DefaultFieldsToMask, Config.AdditionalFieldsToMask)
 }
 
-// getEnvMaskedFields reads masked fields from environment variable
 func getEnvMaskedFields() []string {
 	fieldsStr := os.Getenv("TREBLLE_MASKED_FIELDS")
 	if fieldsStr == "" {
@@ -148,7 +144,6 @@ func getEnvMaskedFields() []string {
 	return strings.Split(fieldsStr, ",")
 }
 
-// getDefaultFieldsToMask returns the default list of fields to mask
 func getDefaultFieldsToMask() []string {
 	return []string{
 		"password",
@@ -184,7 +179,6 @@ func generateFieldsToMask(defaultFields, additionalFields []string) map[string]b
 	return fieldsToMask
 }
 
-// Utility function to get env variable or return default
 func getEnvOrDefault(envKey, defaultValue string) string {
 	if value := os.Getenv(envKey); value != "" {
 		return value
@@ -192,7 +186,6 @@ func getEnvOrDefault(envKey, defaultValue string) string {
 	return defaultValue
 }
 
-// GetSDKInfo returns SDK name and version (for debugging)
 func GetSDKInfo() map[string]string {
 	return map[string]string{
 		"SDK Name":    Config.SDKName,
@@ -200,8 +193,6 @@ func GetSDKInfo() map[string]string {
 	}
 }
 
-// getEnvAsSlice reads a comma-separated environment variable and returns it as a slice
-// If the environment variable is not set, it returns the default values
 func getEnvAsSlice(envKey string, defaultValues []string) []string {
 	if value := os.Getenv(envKey); value != "" {
 		return strings.Split(value, ",")
@@ -209,12 +200,9 @@ func getEnvAsSlice(envKey string, defaultValues []string) []string {
 	return defaultValues
 }
 
-// IsEnvironmentIgnored checks if the current environment should be ignored
 func IsEnvironmentIgnored() bool {
-	// Get the current environment
-	currentEnv := os.Getenv("GO_ENV") // Default Go environment variable
+	currentEnv := os.Getenv("GO_ENV")
 	if currentEnv == "" {
-		// Try alternative environment variables if GO_ENV is not set
 		currentEnv = os.Getenv("ENV")
 		if currentEnv == "" {
 			currentEnv = os.Getenv("ENVIRONMENT")
@@ -224,12 +212,10 @@ func IsEnvironmentIgnored() bool {
 		}
 	}
 
-	// If no environment is set, don't ignore
 	if currentEnv == "" {
 		return false
 	}
 
-	// Check if the environment is in the ignored list
 	for _, ignoredEnv := range Config.IgnoredEnvironments {
 		if strings.TrimSpace(currentEnv) == strings.TrimSpace(ignoredEnv) {
 			return true

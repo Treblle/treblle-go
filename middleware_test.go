@@ -35,8 +35,8 @@ func (s *TestSuite) SetupTest() {
 	s.treblleMockMux = http.NewServeMux()
 	s.treblleMockServer = httptest.NewServer(s.treblleMockMux)
 	Configure(Configuration{
-		APIKey:    "test-api-key",
-		ProjectID: "test-project",
+		SDK_TOKEN: "test-sdk-token",
+		API_KEY:   "test-api-key",
 		DefaultFieldsToMask: []string{
 			"password",
 			"api_key",
@@ -183,8 +183,8 @@ func (s *TestSuite) TestMiddleware() {
 		log.Printf("Test case: %s, Mock URL: %s", tn, mockURL)
 
 		Configure(Configuration{
-			APIKey:              "test-api-key",
-			ProjectID:           "test-project-id",
+			SDK_TOKEN:              "test-sdk-token",
+			API_KEY:                "test-api-key",
 			DefaultFieldsToMask: []string{"password"},
 			Endpoint:            mockURL,
 		})
@@ -198,9 +198,9 @@ func (s *TestSuite) TestMiddleware() {
 				log.Printf("Error decoding request body in mock server: %v", err)
 				return
 			}
-			log.Printf("Received metadata - APIKey: %s, ProjectID: %s", treblleMetadata.ApiKey, treblleMetadata.ProjectID)
-			s.Require().Equal("test-api-key", treblleMetadata.ApiKey)
-			s.Require().Equal("test-project-id", treblleMetadata.ProjectID)
+			log.Printf("Received metadata - SDK Token: %s, API Key: %s", treblleMetadata.ApiKey, treblleMetadata.ProjectID)
+			s.Require().Equal("test-sdk-token", treblleMetadata.ApiKey)
+			s.Require().Equal("test-api-key", treblleMetadata.ProjectID)
 
 			if tn == "non-json-response" {
 				// For non-JSON responses, the body should be a JSON string
@@ -264,8 +264,8 @@ func (s *TestSuite) TestProtocolDetection() {
 	mockURL := s.treblleMockServer.URL
 
 	Configure(Configuration{
-		APIKey:              "test-api-key",
-		ProjectID:           "test-project-id",
+		SDK_TOKEN: "test-sdk-token",
+		API_KEY:   "test-api-key",
 		DefaultFieldsToMask: []string{"password"},
 		Endpoint:            mockURL,
 	})

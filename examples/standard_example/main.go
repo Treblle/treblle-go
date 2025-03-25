@@ -81,8 +81,9 @@ func createUserHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	// Configure Treblle
 	treblle.Configure(treblle.Configuration{
-		APIKey:    "Treblle API key",    // Set your Treblle API key
-		ProjectID: "Treblle Project ID", // Set your Treblle Project ID
+		SDK_TOKEN: "Treblle SDK Token", // Set your Treblle SDK Token
+		API_KEY:   "Treblle API Key",   // Set your Treblle API Key
+		Debug:     true,                // Enable debug mode to see what's being sent to Treblle
 	})
 
 	// Create a new serve mux

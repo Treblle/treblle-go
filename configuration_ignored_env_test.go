@@ -88,9 +88,9 @@ func TestIgnoredEnvironments(t *testing.T) {
 			
 			// Configure Treblle with test case settings
 			config := Configuration{
-				APIKey:              "test-api-key",
-				ProjectID:           "test-project-id",
-				IgnoredEnvironments: tc.ignoredEnvs,
+				SDK_TOKEN:              "test-sdk-token",
+				API_KEY:                "test-api-key",
+				IgnoredEnvironments:    tc.ignoredEnvs,
 			}
 			Configure(config)
 			

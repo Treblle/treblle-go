@@ -138,10 +138,10 @@ func main() {
 	}
 
 	treblle.Configure(treblle.Configuration{
-		APIKey:                 os.Getenv("TREBLLE_API_KEY"),
-		ProjectID:              os.Getenv("TREBLLE_PROJECT_ID"),
-		AdditionalFieldsToMask: []string{"bank_account", "routing_number", "tax_id", "auth_token", "ssn", "api_key", "password", "credit_card"},
+		APIKey:                 os.Getenv("TREBLLE_SDK_TOKEN"),
+		ProjectID:              os.Getenv("TREBLLE_API_KEY"),
 		Debug:                  debug == "true",
+		AdditionalFieldsToMask: []string{"bank_account", "routing_number", "tax_id", "auth_token", "ssn", "api_key", "password", "credit_card"},
 	})
 
 	r := mux.NewRouter()

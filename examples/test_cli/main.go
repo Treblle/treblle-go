@@ -19,20 +19,23 @@ import (
 
 func main() {
 	// Set environment variables for testing
-	os.Setenv("TREBLLE_API_KEY", "test_api_key_12345")
-	os.Setenv("TREBLLE_PROJECT_ID", "test_project_id_67890")
+	os.Setenv("TREBLLE_SDK_TOKEN", "test_api_key_12345")
+	os.Setenv("TREBLLE_API_KEY", "test_project_id_67890")
 	os.Setenv("TREBLLE_ENDPOINT", "https://test-api.treblle.com")
 	os.Setenv("TREBLLE_IGNORED_ENVIRONMENTS", "local,testing")
 
-	// Configure Treblle with test values
+	// Configure Treblle
 	treblle.Configure(treblle.Configuration{
-		APIKey:                  "test_api_key_12345",
-		ProjectID:               "test_project_id_67890",
-		AdditionalFieldsToMask:  []string{"custom_field", "secret_data"},
-		MaskingEnabled:          true,
+		SDK_TOKEN: os.Getenv("TREBLLE_SDK_TOKEN"), // Get SDK Token from environment variable
+		API_KEY:   os.Getenv("TREBLLE_API_KEY"),   // Get API Key from environment variable
+		Debug:     true,                           // Enable debug mode
+		AdditionalFieldsToMask:  []string{"custom_field", "another_field"},
+		BatchErrorEnabled:       true,
+		BatchErrorSize:          5,
+		BatchFlushInterval:      10 * time.Second,
 		AsyncProcessingEnabled:  true,
 		MaxConcurrentProcessing: 5,
-		AsyncShutdownTimeout:    time.Second * 3,
+		AsyncShutdownTimeout:    3 * time.Second,
 		IgnoredEnvironments:     []string{"local", "testing"},
 	})
 

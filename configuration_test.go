@@ -10,8 +10,8 @@ import (
 func TestSDKVersioning(t *testing.T) {
 	// Initialize with default configuration
 	Configure(Configuration{
-		APIKey:    "test-api-key",
-		ProjectID: "test-project-id",
+		SDK_TOKEN: "test-sdk-token",
+		API_KEY:   "test-api-key",
 	})
 
 	// Ensure default version is correct

@@ -69,8 +69,8 @@ import (
 
 func main() {
     treblle.Configure(treblle.Configuration{
-        APIKey:    "your-treblle-api-key",
-        ProjectID: "your-treblle-project-id",
+        SDK_TOKEN: "your-treblle-sdk-token",
+        API_KEY:   "your-treblle-api-key",
     })
     
     // Your API server setup
@@ -93,8 +93,8 @@ import (
 func main() {
     // Configure Treblle
     treblle.Configure(treblle.Configuration{
-        APIKey:    "your-treblle-api-key",
-        ProjectID: "your-treblle-project-id",
+        SDK_TOKEN: "your-treblle-sdk-token",
+        API_KEY:   "your-treblle-api-key",
     })
 
     // Create a new router
@@ -124,8 +124,8 @@ import (
 func main() {
     // Configure Treblle
     treblle.Configure(treblle.Configuration{
-        APIKey:    "your-treblle-api-key",
-        ProjectID: "your-treblle-project-id",
+        SDK_TOKEN: "your-treblle-sdk-token",
+        API_KEY:   "your-treblle-api-key",
     })
 
     // Create a new serve mux

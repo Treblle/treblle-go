@@ -10,8 +10,8 @@ import (
 func TestBatchErrorCollector(t *testing.T) {
 	// Configure Treblle with test settings
 	Configure(Configuration{
-		APIKey:    "test-api-key",
-		ProjectID: "test-project-id",
+		SDK_TOKEN: "test-sdk-token",
+		API_KEY:   "test-api-key",
 		Endpoint:  "http://localhost:8080",
 	})
 
