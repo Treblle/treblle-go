@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi"
-	"github.com/treblle/treblle-go"
+	"github.com/Treblle/treblle-go/v2"
 )
 
 // Create a test request and response for debugging

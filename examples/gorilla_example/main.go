@@ -7,7 +7,7 @@ import (
 	"log"
 	"net/http"
 
-	treblle "github.com/Treblle/treblle-go" // Update this to your actual import path
+	treblle "github.com/Treblle/treblle-go/v2" // Updated to v2 import path
 	"github.com/gorilla/mux"
 )
 
