@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/treblle/treblle-go"
+	"github.com/Treblle/treblle-go/v2"
 )
 
 func main() {

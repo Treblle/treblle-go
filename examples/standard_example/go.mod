@@ -1,9 +1,9 @@
-module standard_example
+module github.com/Treblle/treblle-go/examples/standard_example
 
-go 1.23.2
+go 1.21
 
-replace github.com/Treblle/treblle-go => /Users/pratimbhosale/Desktop/hobbyprojects/treblle-go
+require github.com/Treblle/treblle-go/v2 v2.0.0
 
-require github.com/Treblle/treblle-go v0.0.0-00010101000000-000000000000
+replace github.com/Treblle/treblle-go/v2 => ../../
 
 require golang.org/x/sync v0.11.0 // indirect

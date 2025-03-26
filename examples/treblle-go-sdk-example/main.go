@@ -12,7 +12,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
-	treblle "github.com/treblle/treblle-go"
+	treblle "github.com/Treblle/treblle-go/v2"
 )
 
 type User struct {
