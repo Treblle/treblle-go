@@ -1,4 +1,4 @@
-module github.com/treblle/treblle-go
+module github.com/Treblle/treblle-go/v2
 
 go 1.21
 
