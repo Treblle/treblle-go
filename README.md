@@ -57,14 +57,14 @@ This means data masking is super fast and happens on a programming level before 
 ## Installation
 
 ```bash
-go get github.com/treblle/treblle-go
+go get github.com/treblle/treblle-go/v2
 ```
 
 ## Configuration
 
 ```go
 import (
-    "github.com/treblle/treblle-go"
+    "github.com/treblle/treblle-go/v2"
 )
 
 func main() {
