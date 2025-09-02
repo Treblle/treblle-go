@@ -57,7 +57,7 @@ This means data masking is super fast and happens on a programming level before 
 ## Installation
 
 ```bash
-go get github.com/treblle/treblle-go/v2
+go get github.com/Treblle/treblle-go/v2
 ```
 
 ## Configuration
