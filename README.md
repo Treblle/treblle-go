@@ -80,7 +80,39 @@ func main() {
 
 ## Usage with Different Routers
 
-### With Gorilla Mux (Recommended)
+### With Gin
+
+The SDK provides native support for the Gin framework with automatic route pattern extraction:
+
+```go
+import (
+    "github.com/gin-gonic/gin"
+    "github.com/treblle/treblle-go/v2"
+)
+
+func main() {
+    // Configure Treblle
+    treblle.Configure(treblle.Configuration{
+        SDK_TOKEN: "your-treblle-sdk-token",
+        API_KEY:   "your-treblle-api-key",
+    })
+
+    // Create Gin router
+    r := gin.Default()
+
+    // Apply Treblle middleware - route patterns are automatically extracted!
+    r.Use(treblle.GinMiddleware())
+
+    // Define your routes
+    r.GET("/users", getUsersHandler)
+    r.GET("/users/:id", getUserHandler)
+    r.POST("/users", createUserHandler)
+
+    r.Run(":8080")
+}
+```
+
+### With Gorilla Mux
 
 The SDK automatically extracts route patterns from Gorilla Mux:
 
