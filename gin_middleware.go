@@ -37,6 +37,22 @@ func GinMiddleware() gin.HandlerFunc {
 			return
 		}
 
+		// Check if route is excluded
+		routePath := c.FullPath()
+		if routePath == "" {
+			routePath = c.Request.URL.Path
+		}
+		normalizedRoute := normalizeRoutePath(routePath)
+
+		if Config.compiledExclusions != nil && isRouteExcluded(normalizedRoute, Config.compiledExclusions) {
+			if Config.Debug {
+				fmt.Printf("==== TREBLLE GIN: ROUTE EXCLUDED ====\nRoute: %s\n=====================================\n", normalizedRoute)
+			}
+			// Skip Treblle logging for excluded routes
+			c.Next()
+			return
+		}
+
 		// Create error provider for this request
 		errorProvider := NewErrorProvider()
 		defer errorProvider.Clear()
@@ -60,7 +76,7 @@ func GinMiddleware() gin.HandlerFunc {
 		c.Request = tracker.StoreStartTime(c.Request)
 
 		// Extract route pattern from Gin (e.g., "/users/:id")
-		routePath := c.FullPath()
+		routePath = c.FullPath()
 		if routePath != "" {
 			c.Request = SetRoutePath(c.Request, routePath)
 		}

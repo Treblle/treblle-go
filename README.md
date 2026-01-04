@@ -1,66 +1,47 @@
-# Treblle
+# Treblle - API Intelligence Platform
 
-![Treblle Logo](https://github.com/user-attachments/assets/54f0c084-65bb-4431-b80d-cceab6c63dc3 "Treblle Logo")
+[![Treblle API Intelligence](https://github.com/user-attachments/assets/b268ae9e-7c8a-4ade-95da-b4ac6fce6eea)](https://treblle.com)
 
-[Integrations](https://docs.treblle.com/en/integrations) •
-[Website](http://treblle.com/) •
-[Docs](https://docs.treblle.com) •
-[Blog](https://blog.treblle.com) •
-[Twitter](https://twitter.com/treblleapi) •
-[Discord](https://treblle.com/chat)
+[Website](http://treblle.com/) • [Documentation](https://docs.treblle.com/) • [Pricing](https://treblle.com/pricing)
+
+Treblle is an API intelligence platfom that helps developers, teams and organizations understand their APIs from a single integration point.
 
 ---
 
-API Intelligence Platform.
+## Treblle Go Lang SDK
 
-Treblle is a lightweight SDK that helps Engineering and Product teams build, ship & maintain REST-based APIs faster.
+### Requirements
 
-## Features
+| Go Version | Support Status |
+|------------|----------------|
+| 1.23+      | Fully Supported |
+| 1.21 - 1.22 | Should work, not officially tested |
+| < 1.21     | Not Supported |
 
-![Treblle Features](https://github.com/user-attachments/assets/9b5f40ba-bec9-414b-af88-f1c1cc80781b "Treblle Features")
+### Router & Framework Support
 
-- [API Monitoring & Observability](https://www.treblle.com/features/api-monitoring-observability)
-- [Auto-generated API Docs](https://www.treblle.com/features/auto-generated-api-docs)
-- [API analytics](https://www.treblle.com/features/api-analytics)
-- [Treblle API Score](https://www.treblle.com/features/api-quality-score)
-- [API Lifecycle Collaboration](https://www.treblle.com/features/api-lifecycle)
-- [Native Treblle Apps](https://www.treblle.com/features/native-apps)
-
-## How Treblle Works
-
-Once you've integrated a Treblle SDK in your codebase, this SDK will send requests and response data to your Treblle Dashboard.
-
-In your Treblle Dashboard you get to see real-time requests to your API, auto-generated API docs, API analytics like how fast the response was for an endpoint, the load size of the response, etc.
-
-Treblle also uses the requests sent to your Dashboard to calculate your API score which is a quality score that's calculated based on the performance, quality, and security best practices for your API.
-
-> Visit [https://docs.treblle.com](http://docs.treblle.com) for the complete documentation.
-
-## Security
-
-### Masking fields
-
-Masking fields ensure certain sensitive data are removed before being sent to Treblle.
-
-To make sure masking is done before any data leaves your server [we built it into all our SDKs](https://docs.treblle.com/en/security/masked-fields#fields-masked-by-default).
-
-This means data masking is super fast and happens on a programming level before the API request is sent to Treblle. You can [customize](https://docs.treblle.com/en/security/masked-fields#custom-masked-fields) exactly which fields are masked when you're integrating the SDK.
-
-> Visit the [Masked fields](https://docs.treblle.com/en/security/masked-fields) section of the [docs](https://docs.sailscasts.com) for the complete documentation.
-
-## Get Started
-
-1. Sign in to [Treblle](https://platform.treblle.com).
-2. [Create a Treblle project](https://docs.treblle.com/en/dashboard/projects#creating-a-project).
-3. [Setup the SDK](#installation) for your platform.
+| Router/Framework | Support Level | Native Integration |
+|------------------|---------------|-------------------|
+| **Standard Library** (`net/http`) | Fully Supported | Yes |
+| **Gin** | Fully Supported | Yes |
+| **Gorilla Mux** | ✅ Fully Supported | Yes |
+| **Chi** | Fully Supported | Yes |
+| **Echo** | Compatible | No |
+| **Fiber** | Compatible | No |
+| **Other Routers** | Compatible | No |
 
 ## Installation
+
+### 1. Install the Package
 
 ```bash
 go get github.com/Treblle/treblle-go/v2
 ```
 
-## Configuration
+### 2. Get Your Credentials
+Get your SDK Token and API Key from the [Treblle Dashboard](https://platform.treblle.com).
+
+### 3. Configure Treblle
 
 ```go
 import (
@@ -72,13 +53,11 @@ func main() {
         SDK_TOKEN: "your-treblle-sdk-token",
         API_KEY:   "your-treblle-api-key",
     })
-    
+
     // Your API server setup
     // ...
 }
 ```
-
-## Usage with Different Routers
 
 ### With Gin
 
@@ -181,19 +160,63 @@ router.GET("/users/:id", wrapHandler(treblle.WithRoutePath("/users/:id",
     treblle.Middleware(http.HandlerFunc(getUserHandler)))))
 ```
 
-## Manual Route Path Setting
+## Excluding Routes
 
-You can also set route paths programmatically in your handlers:
+You can configure Treblle to exclude specific routes from being tracked. This is useful for health checks, metrics endpoints, internal APIs, or any routes you don't want to monitor.
+
+### Basic Usage
 
 ```go
-func myHandler(w http.ResponseWriter, r *http.Request) {
-    // Set the route path for this specific request
-    r = treblle.SetRoutePath(r, "/api/custom/:param")
-    
-    // Your handler logic
-    // ...
+treblle.Configure(treblle.Configuration{
+    SDK_TOKEN: "your-treblle-sdk-token",
+    API_KEY:   "your-treblle-api-key",
+    ExcludedRoutes: []string{
+        "/health",           // Exact match
+        "/metrics",          // Exact match
+        "/admin/*",          // Wildcard: matches all admin routes
+        "/api/*/internal/*", // Multiple wildcards
+    },
+})
+```
+
+### Pattern Types
+
+**Exact Match:**
+```go
+ExcludedRoutes: []string{"/health", "/status", "/readiness"}
+```
+- Matches exactly `/health`, `/status`, and `/readiness`
+- Case-insensitive matching
+- Trailing slashes are normalized (`/health/` matches `/health`)
+
+**Simple Wildcard:**
+```go
+ExcludedRoutes: []string{"/admin/*"}
+```
+- Matches `/admin/dashboard`, `/admin/users`, `/admin/users/123`, etc.
+- The `*` matches any segment and **all nested paths**
+- Perfect for excluding entire sections of your API
+
+**Multiple Wildcards:**
+```go
+ExcludedRoutes: []string{
+    "/api/*/internal/*",
+    "/v*/debug/*",
 }
 ```
+- Each `*` matches exactly one path segment
+- `/api/*/internal/*` matches `/api/v1/internal/debug`, `/api/v2/internal/metrics/detailed`, etc.
+- Provides fine-grained control over exclusions
+
+### Environment Variable
+
+You can also set excluded routes via environment variable:
+```bash
+export TREBLLE_EXCLUDED_ROUTES="/health,/metrics,/admin/*"
+```
+
+The environment variable uses comma-separated values and is loaded automatically if `ExcludedRoutes` is not set in the configuration.
+
 
 ## Examples
 
@@ -202,56 +225,22 @@ Check the `examples` directory for complete example applications:
 - `gorilla_example`: Shows integration with Gorilla Mux
 - `standard_example`: Shows integration with the standard HTTP package
 
-## Available SDKs
 
-Treblle provides [open-source SDKs](https://docs.treblle.com/en/integrations) that let you seamlessly integrate Treblle with your REST-based APIs.
+## Getting Help
 
-- [`treblle-laravel`](https://github.com/Treblle/treblle-laravel): SDK for Laravel
-- [`treblle-php`](https://github.com/Treblle/treblle-php): SDK for PHP
-- [`treblle-symfony`](https://github.com/Treblle/treblle-symfony): SDK for Symfony
-- [`treblle-lumen`](https://github.com/Treblle/treblle-lumen): SDK for Lumen
-- [`treblle-sails`](https://github.com/Treblle/treblle-sails): SDK for Sails
-- [`treblle-adonisjs`](https://github.com/Treblle/treblle-adonisjs): SDK for AdonisJS
-- [`treblle-fastify`](https://github.com/Treblle/treblle-fastify): SDK for Fastify
-- [`treblle-directus`](https://github.com/Treblle/treblle-directus): SDK for Directus
-- [`treblle-strapi`](https://github.com/Treblle/treblle-strapi): SDK for Strapi
-- [`treblle-express`](https://github.com/Treblle/treblle-express): SDK for Express
-- [`treblle-koa`](https://github.com/Treblle/treblle-koa): SDK for Koa
-- [`treblle-go`](https://github.com/Treblle/treblle-go): SDK for Go
-- [`treblle-ruby`](https://github.com/Treblle/treblle-ruby): SDK for Ruby on Rails
-- [`treblle-python`](https://github.com/Treblle/treblle-python): SDK for Python/Django
+If you continue to experience issues:
 
-> See the [docs](https://docs.treblle.com/en/integrations) for more on SDKs and Integrations.
+1. Enable `debug: true` and check console output
+2. Verify your SDK token and API key are correct in Treblle dashboard
+3. Test with a simple endpoint first
+4. Check [Treblle documentation](https://docs.treblle.com) for the latest updates
+5. Contact support at <https://treblle.com> or email support@treblle.com
 
-## Other Packages
+## Support
 
-Besides the SDKs, we also provide helpers and configuration used for SDK
-development. If you're thinking about contributing to or creating a SDK, have a look at the resources
-below:
+If you have problems of any kind feel free to reach out via <https://treblle.com> or email support@treblle.com and we'll do our best to help you out.
 
-- [`treblle-utils`](https://github.com/Treblle/treblle-utils): A set of helpers and
-  utility functions useful for the JavaScript SDKs.
-- [`php-utils`](https://github.com/Treblle/php-utils): A set of helpers and
-  utility functions useful for the PHP SDKs.
+## License
 
-## Community
-
-First and foremost: **Star and watch this repository** to stay up-to-date.
-
-Also, follow our [Blog](https://blog.treblle.com), and on [Twitter](https://twitter.com/treblleapi).
-
-You can chat with the team and other members on [Discord](https://treblle.com/chat) and follow our tutorials and other video material at [YouTube](https://youtube.com/@treblle).
-
-[![Treblle Discord](https://img.shields.io/badge/Treblle%20Discord-Join%20our%20Discord-F3F5FC?labelColor=7289DA&style=for-the-badge&logo=discord&logoColor=F3F5FC&link=https://treblle.com/chat)](https://treblle.com/chat)
-
-[![Treblle YouTube](https://img.shields.io/badge/Treblle%20YouTube-Subscribe%20on%20YouTube-F3F5FC?labelColor=c4302b&style=for-the-badge&logo=YouTube&logoColor=F3F5FC&link=https://youtube.com/@treblle)](https://youtube.com/@treblle)
-
-[![Treblle on Twitter](https://img.shields.io/badge/Treblle%20on%20Twitter-Follow%20Us-F3F5FC?labelColor=1DA1F2&style=for-the-badge&logo=Twitter&logoColor=F3F5FC&link=https://twitter.com/treblleapi)](https://twitter.com/treblleapi)
-
-### How to contribute
-
-Here are some ways of contributing to making Treblle better:
-
-- **[Try out Treblle](https://docs.treblle.com/en/introduction#getting-started)**, and let us know ways to make Treblle better for you. Let us know here on [Discord](https://treblle.com/chat).
-- Join our [Discord](https://treblle.com/chat) and connect with other members to share and learn from.
-- Send a pull request to any of our [open source repositories](https://github.com/Treblle) on Github. Check the contribution guide on the repo you want to contribute to for more details about how to contribute. We're looking forward to your contribution!
+Copyright 2025, Treblle Inc. Licensed under the MIT license:
+http://www.opensource.org/licenses/mit-license.php

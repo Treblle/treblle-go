@@ -1,6 +1,7 @@
 package treblle
 
 import (
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -26,6 +27,7 @@ type Configuration struct {
 	MaxConcurrentProcessing int           // Maximum number of concurrent async operations (default: 10)
 	AsyncShutdownTimeout    time.Duration // Timeout for async shutdown (default: 5s)
 	IgnoredEnvironments     []string      // Environments where Treblle does not track requests
+	ExcludedRoutes          []string      // Routes that Treblle should not track
 	Debug                   bool          // Enable debug mode to see what's being sent to Treblle
 }
 
@@ -48,6 +50,8 @@ type internalConfiguration struct {
 	MaxConcurrentProcessing int
 	AsyncShutdownTimeout    time.Duration
 	IgnoredEnvironments     []string
+	ExcludedRoutes          []string
+	compiledExclusions      *compiledRoutePatterns // Pre-compiled patterns for performance
 }
 
 func Configure(config Configuration) {
@@ -131,6 +135,25 @@ func Configure(config Configuration) {
 	} else {
 		defaultIgnoredEnvs := []string{"dev", "test", "testing"}
 		Config.IgnoredEnvironments = getEnvAsSlice("TREBLLE_IGNORED_ENV", defaultIgnoredEnvs)
+	}
+
+	// Load excluded routes from config or environment variable
+	if len(config.ExcludedRoutes) > 0 {
+		Config.ExcludedRoutes = config.ExcludedRoutes
+	} else {
+		Config.ExcludedRoutes = getEnvAsSlice("TREBLLE_EXCLUDED_ROUTES", []string{})
+	}
+
+	// Pre-compile route exclusion patterns for efficient matching
+	Config.compiledExclusions = compileRoutePatterns(Config.ExcludedRoutes)
+
+	// Debug: Log excluded routes if debug mode is enabled
+	if Config.Debug && len(Config.ExcludedRoutes) > 0 {
+		fmt.Printf("==== TREBLLE: EXCLUDED ROUTES ====\n")
+		for _, route := range Config.ExcludedRoutes {
+			fmt.Printf("  - %s\n", route)
+		}
+		fmt.Printf("==================================\n")
 	}
 
 	Config.FieldsMap = generateFieldsToMask(Config.DefaultFieldsToMask, Config.AdditionalFieldsToMask)
