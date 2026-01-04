@@ -17,6 +17,22 @@ func Middleware(next http.Handler) http.Handler {
 			return
 		}
 
+		// Check if route is excluded
+		routePath := GetRoutePath(r)
+		if routePath == "" {
+			routePath = r.URL.Path
+		}
+		normalizedRoute := normalizeRoutePath(routePath)
+
+		if Config.compiledExclusions != nil && isRouteExcluded(normalizedRoute, Config.compiledExclusions) {
+			if Config.Debug {
+				fmt.Printf("==== TREBLLE: ROUTE EXCLUDED ====\nRoute: %s\n=================================\n", normalizedRoute)
+			}
+			// Skip Treblle logging for excluded routes
+			next.ServeHTTP(w, r)
+			return
+		}
+
 		// Create error provider for this request
 		errorProvider := NewErrorProvider()
 		defer errorProvider.Clear()
